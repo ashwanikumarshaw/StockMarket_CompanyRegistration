@@ -10,6 +10,7 @@ import javax.persistence.Id;
 
 @Entity
 public class Stock {
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private long transactionId;
@@ -19,7 +20,7 @@ public class Stock {
 	private Long stockPrice;
 	@Column(nullable = false)
 	private LocalDateTime timestamp;
-	
+
 	public Stock(Long companyId, Long stockPrice) {
 		super();
 		this.company_id_fk = companyId;
