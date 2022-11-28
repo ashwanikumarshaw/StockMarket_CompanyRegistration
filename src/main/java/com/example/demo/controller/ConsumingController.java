@@ -7,25 +7,29 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
+
+import com.example.demo.dto.UserDTO;
 
 @RestController
 @RequestMapping("/consumer")
 public class ConsumingController {
 	@PostMapping("/getLogin")
-	public ResponseEntity<?> consumeLogin() throws Exception
+	public ResponseEntity<?> consumeLogin(@RequestBody UserDTO user) throws Exception
 	{
 		RestTemplate restTemplate = new RestTemplate();
 		
 		String baseUrl = "http://localhost:8091/auth/user/login";
 		
 		ResponseEntity<String> response = null;
-		
+
+
 		try
 		{
-			response = restTemplate.exchange(baseUrl, HttpMethod.GET, getHeaders(), String.class);
+			response = restTemplate.exchange(baseUrl, HttpMethod.POST, getHeaders(user), String.class);
 			return new ResponseEntity<>(response, HttpStatus.OK);
 			
 			//response = restTemplate.postForEntity(baseUrl, HttpMethod.POST, String.class);
@@ -39,13 +43,13 @@ public class ConsumingController {
 		
 	}
 	
-	private static HttpEntity<?> getHeaders() throws Exception
+	private static HttpEntity<?> getHeaders(UserDTO user) throws Exception
 	{
 		HttpHeaders headers = new HttpHeaders();
 		headers.set("Accept", MediaType.APPLICATION_JSON_VALUE);
 		//headers.set("Authorization", jwtToken);
 		//headers.set("Access-Controll-Allow-Origin", "*");
-		return new HttpEntity<>(headers);
+		return new HttpEntity<>(user,headers);
 		
 	}
 
