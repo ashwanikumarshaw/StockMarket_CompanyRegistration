@@ -1,8 +1,10 @@
 package com.example.demo.controller;
 
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.CacheControl;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -19,6 +21,7 @@ import com.example.demo.exceptions.CompanyDoesNotExist;
 import com.example.demo.exceptions.TurnoverLessThanLimit;
 import com.example.demo.model.Company;
 import com.example.demo.model.Stock;
+import com.example.demo.response.ResponseHandler;
 import com.example.demo.service.CompanyService;
 import com.example.demo.service.StockService;
 
@@ -51,7 +54,12 @@ public class CompanyController {
 		if (company != null) {
 			Stock stock = stockService.getLastStock(companyId);
 			company.getStockList().add(stock);
-			return new ResponseEntity<Company>(company, HttpStatus.OK);
+			
+//			return new ResponseEntity<Company>(company, HttpStatus.OK);
+			
+			CacheControl cacheControl = CacheControl.maxAge(30, TimeUnit.HOURS);
+    		return  ResponseEntity.ok().cacheControl(cacheControl)
+    		.body(ResponseHandler.generateResponse("Successfully fetching the data", HttpStatus.OK,company));
 		} else
 			return new ResponseEntity<String>("Company doesn't exist", HttpStatus.CONFLICT);
 	}
@@ -66,7 +74,10 @@ public class CompanyController {
 				Stock stock = stockService.getLastStock(company.getCompanyId());
 				company.getStockList().add(stock);
 			}
-			return new ResponseEntity<List<Company>>(companyService.getAllCompanies(), HttpStatus.OK);
+//			return new ResponseEntity<List<Company>>(companyService.getAllCompanies(), HttpStatus.OK);
+			CacheControl cacheControl = CacheControl.maxAge(30, TimeUnit.HOURS);
+    		return  ResponseEntity.ok().cacheControl(cacheControl)
+    		.body(ResponseHandler.generateResponse("Successfully fetching the data", HttpStatus.OK,companyList));
 		} else
 			return new ResponseEntity<String>("No company exist", HttpStatus.CONFLICT);
 	}

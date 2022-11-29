@@ -17,7 +17,7 @@ public class Company {
 	@Column(nullable = false)
 	private String companyCEO;
 	@Column(nullable = false)
-	private Long companyTurnover;
+	private long companyTurnover;
 	@Column(nullable = false)
 	private String companyWebsite;
 	@Column(nullable = false)
@@ -61,7 +61,7 @@ public class Company {
 		return companyTurnover;
 	}
 
-	public void setCompanyTurnover(Long companyTurnover) {
+	public void setCompanyTurnover(long companyTurnover) {
 		this.companyTurnover = companyTurnover;
 	}
 

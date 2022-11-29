@@ -25,7 +25,7 @@ public class CompanyServiceImpl implements CompanyService {
 		if (validCompany(company.getCompanyId()))
 			throw new CompanyAlreadyExist();
 		else if (company.getCompanyTurnover() > TURNOVERLIMIT)
-			return companyRepo.saveAndFlush(company);
+			return companyRepo.save(company);
 		else
 			throw new TurnoverLessThanLimit();
 
@@ -64,18 +64,19 @@ public class CompanyServiceImpl implements CompanyService {
 	public Company updateCompany(Company company) throws CompanyDoesNotExist, TurnoverLessThanLimit {
 		if (!validCompany(company.getCompanyId()))
 			throw new CompanyDoesNotExist();
-		Company companyObj = companyRepo.getById(company.getCompanyId());
-		if (companyObj != null) {
+		
+		Optional<Company> companyObj = companyRepo.findById(company.getCompanyId());
+
+		if (companyObj.isPresent()) {
+		
 			if (company.getCompanyTurnover() <= TURNOVERLIMIT)
 				throw new TurnoverLessThanLimit();
-
-			companyObj.setCompanyName(company.getCompanyName());
-			companyObj.setCompanyTurnover(company.getCompanyTurnover());
-			companyObj.setCompanyWebsite(company.getCompanyWebsite());
-			companyObj.setStockExchange(company.getStockExchange());
-			companyRepo.saveAndFlush(companyObj);
+						
+			 companyRepo.save(company);
+			 return company;
 		}
-		return companyObj;
+
+		return null;
 	}
 
 }
