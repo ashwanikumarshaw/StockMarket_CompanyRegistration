@@ -17,11 +17,11 @@ public class Stock {
 	@Column(nullable = false)
 	private long company_id_fk;
 	@Column(nullable = false)
-	private Long stockPrice;
+	private long stockPrice;
 	@Column(nullable = false)
 	private LocalDateTime timestamp;
 
-	public Stock(Long companyId, Long stockPrice) {
+	public Stock(long companyId, long stockPrice) {
 		super();
 		this.company_id_fk = companyId;
 		this.stockPrice = stockPrice;
@@ -48,11 +48,11 @@ public class Stock {
 		return transactionId;
 	}
 
-	public Long getStockPrice() {
+	public long getStockPrice() {
 		return stockPrice;
 	}
 
-	public void setStockPrice(Long stockPrice) {
+	public void setStockPrice(long stockPrice) {
 		this.stockPrice = stockPrice;
 	}
 

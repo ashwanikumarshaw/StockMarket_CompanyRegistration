@@ -48,8 +48,7 @@ public class CompanyServiceImpl implements CompanyService {
 
 	@Override
 	public boolean removeCompany(long companyId) throws CompanyDoesNotExist {
-		if (!validCompany(companyId))
-			throw new CompanyDoesNotExist();
+		
 		companyRepo.deleteById(companyId);
 		return true;
 	}
@@ -62,21 +61,12 @@ public class CompanyServiceImpl implements CompanyService {
 
 	@Override
 	public Company updateCompany(Company company) throws CompanyDoesNotExist, TurnoverLessThanLimit {
-		if (!validCompany(company.getCompanyId()))
-			throw new CompanyDoesNotExist();
 		
-		Optional<Company> companyObj = companyRepo.findById(company.getCompanyId());
-
-		if (companyObj.isPresent()) {
+		if (company.getCompanyTurnover() <= TURNOVERLIMIT)
+			throw new TurnoverLessThanLimit();
 		
-			if (company.getCompanyTurnover() <= TURNOVERLIMIT)
-				throw new TurnoverLessThanLimit();
-						
-			 companyRepo.save(company);
-			 return company;
-		}
+		return companyRepo.save(company);
 
-		return null;
 	}
 
 }

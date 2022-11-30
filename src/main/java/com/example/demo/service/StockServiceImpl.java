@@ -13,21 +13,15 @@ import com.example.demo.repository.StockRepository;
 public class StockServiceImpl implements StockService {
 	@Autowired
 	private StockRepository stockRepository;
-	@Autowired
-	private CompanyService companyService;
-
+	
 	@Override
-	public Stock addStock(Stock stock) throws CompanyDoesNotExist {
-		if (companyService.validCompany(stock.getCompany_id_fk()))
-			return stockRepository.saveAndFlush(stock);
-		else
-			throw new CompanyDoesNotExist();
+	public boolean addStock(Stock stock) throws CompanyDoesNotExist {
+		stockRepository.saveAndFlush(stock);
+		return true;
+
 	}
-
 	@Override
-	public Stock getLastStock(long company_id_fk) throws CompanyDoesNotExist {
-		if (!companyService.validCompany(company_id_fk))
-			throw new CompanyDoesNotExist();
+	public Stock getLastStock(long company_id_fk) {
 		Set<Stock> stockSet = stockRepository.getStock(company_id_fk);
 		Stock stock = new Stock();
 		for (Stock st : stockSet) {
@@ -36,11 +30,9 @@ public class StockServiceImpl implements StockService {
 		}
 		return stock;
 	}
-
 	@Override
 	public boolean removeAllStock(long companyId) {
 		stockRepository.deleteAllStock(companyId);
 		return true;
 	}
-
 }

@@ -54,14 +54,12 @@ public class CompanyController {
 		if (company != null) {
 			Stock stock = stockService.getLastStock(companyId);
 			company.getStockList().add(stock);
-			
-//			return new ResponseEntity<Company>(company, HttpStatus.OK);
-			
-			CacheControl cacheControl = CacheControl.maxAge(30, TimeUnit.HOURS);
-    		return  ResponseEntity.ok().cacheControl(cacheControl)
-    		.body(ResponseHandler.generateResponse("Successfully fetching the data", HttpStatus.OK,company));
+			return ResponseHandler.generateResponse("Successfully fetching the data", HttpStatus.OK, company);
+//			CacheControl cacheControl = CacheControl.maxAge(30, TimeUnit.HOURS);
+//			return ResponseEntity.ok().cacheControl(cacheControl)
+//					.body(ResponseHandler.generateResponse("Successfully fetching the data", HttpStatus.OK, company));
 		} else
-			return new ResponseEntity<String>("Company doesn't exist", HttpStatus.CONFLICT);
+			return new ResponseEntity<String>("Company doesn't exist", HttpStatus.NO_CONTENT);
 	}
 
 //viewall
@@ -74,17 +72,19 @@ public class CompanyController {
 				Stock stock = stockService.getLastStock(company.getCompanyId());
 				company.getStockList().add(stock);
 			}
-//			return new ResponseEntity<List<Company>>(companyService.getAllCompanies(), HttpStatus.OK);
+
 			CacheControl cacheControl = CacheControl.maxAge(30, TimeUnit.HOURS);
-    		return  ResponseEntity.ok().cacheControl(cacheControl)
-    		.body(ResponseHandler.generateResponse("Successfully fetching the data", HttpStatus.OK,companyList));
+			return ResponseEntity.ok().cacheControl(cacheControl).body(
+					ResponseHandler.generateResponse("Successfully fetching the data", HttpStatus.OK, companyList));
 		} else
-			return new ResponseEntity<String>("No company exist", HttpStatus.CONFLICT);
+			return new ResponseEntity<String>("No company exist", HttpStatus.NO_CONTENT);
 	}
 
 //delete
 	@DeleteMapping("/market/company/delete/{companycode}")
 	public ResponseEntity<?> deleteCompany(@PathVariable("companycode") long companyId) throws CompanyDoesNotExist {
+		if (!companyService.validCompany(companyId))
+			throw new CompanyDoesNotExist();
 		// 1st delete stock then delete company
 		if (stockService.removeAllStock(companyId) && companyService.removeCompany(companyId)) {
 			return new ResponseEntity<String>("Company deleted", HttpStatus.OK);
@@ -94,11 +94,16 @@ public class CompanyController {
 
 	}
 
+//update
 	@PutMapping("/market/company/put/{companycode}")
 	public ResponseEntity<?> updateCompany(@PathVariable("companycode") long companyId, @RequestBody Company company)
 			throws TurnoverLessThanLimit, CompanyDoesNotExist {
 
+		if (!companyService.validCompany(companyId))
+			throw new CompanyDoesNotExist();
+
 		company.setCompanyId(companyId);
+
 		if (companyService.updateCompany(company) != null)
 			return new ResponseEntity<Company>(company, HttpStatus.OK);
 

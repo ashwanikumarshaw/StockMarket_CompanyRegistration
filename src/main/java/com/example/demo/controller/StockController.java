@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.demo.dto.StockDto;
 import com.example.demo.exceptions.CompanyDoesNotExist;
 import com.example.demo.model.Stock;
+import com.example.demo.service.CompanyService;
 import com.example.demo.service.StockService;
 
 @RestController
@@ -19,14 +20,18 @@ import com.example.demo.service.StockService;
 public class StockController {
 	@Autowired
 	private StockService stockService;
+	@Autowired
+	private CompanyService companyService;
 
 	@PostMapping("/market/stock/add/{companycode}")
 	public ResponseEntity<?> registerCompany(@PathVariable("companycode")long companyId, @RequestBody StockDto stockDto) throws CompanyDoesNotExist {
 		
+		if (!companyService.validCompany(companyId))
+			throw new CompanyDoesNotExist();
 		Stock stock=new Stock(companyId, stockDto.getStockPrice());
 		
-		if (stockService.addStock(stock) != null)
-			return new ResponseEntity<Stock>(stock, HttpStatus.CREATED);
+		if (stockService.addStock(stock))
+			return new ResponseEntity<String>("Stock added", HttpStatus.CREATED);
 
 		return new ResponseEntity<String>("Stock not created", HttpStatus.CONFLICT);
 
